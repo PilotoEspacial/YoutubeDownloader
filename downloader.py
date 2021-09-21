@@ -1,28 +1,30 @@
 #bin/python3
 
+from pytube import YouTube
 import os
 import subprocess
+import time
 
-import pytube
+while True:
+    url = input("URL: ")
 
-yt = pytube.YouTube("https://www.youtube.com/watch?v=WH7xsW5Os10")
+    # Title and Time
+    print("...")
 
-vids= yt.streams.all()
-for i in range(len(vids)):
-    print(i,'. ',vids[i])
+    # Filename specification
+    # Prevents any errors during conversion due to illegal characters in name
+    _filename = input("Filename: ")
 
-vnum = int(input("Enter vid num: "))
+    # Downloading
+    print("Downloading....")
+    YouTube(url).streams.first().download(filename=_filename)
+    time.sleep(1)
 
-parent_dir = r"C:\YTDownloads"
-vids[vnum].download(parent_dir)
+    # Converting
+    mp4 = "'%s'.mp4" % _filename
+    mp3 = "'%s'.mp3" % _filename
+    ffmpeg = ('ffmpeg -i %s ' % mp4 + mp3)
+    subprocess.call(ffmpeg, Shell=True)
 
-new_filename = input("Enter filename (including extension): "))  # e.g. new_filename.mp3
-
-default_filename = vids[vnum].default_filename  # get default name using pytube API
-subprocess.call([                               # or subprocess.run (Python 3.5+)
-    'ffmpeg',
-    '-i', os.path.join(parent_dir, default_filename),
-    os.path.join(parent_dir, new_filename)
-])
-
-print('done')
+    # Completion
+    print("\nCOMPLETE\n")
